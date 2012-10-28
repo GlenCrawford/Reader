@@ -4,3 +4,10 @@ development:
   database: reader_development
   username: postgres
   password: 12345
+
+test:
+  adapter: postgresql
+  host: localhost
+  database: reader_test
+  username: postgres
+  password: 12345

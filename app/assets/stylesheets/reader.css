@@ -1,0 +1,135 @@
+body {
+  font-size: 1em;
+  font-family: Verdana, "Segoe UI", "Segoe WP", sans-serif;
+  font-weight: lighter;
+  background-color: #ffffff;
+  color: #ffffff;
+}
+
+.clear {
+  clear: both;
+}
+
+.item {
+  width: 160px;
+  height: 160px;
+  margin: 8px 0 0 8px;
+  font-size: 1em;
+  line-height: 1.2em;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+  float: left;
+}
+
+.item:hover {
+  cursor: hand;
+  cursor: pointer;
+}
+
+.item-wide {
+  width: 328px; /* Double the normal .item width plus the left/right margin. */
+}
+
+.item .item-background-overlay {
+  width: 100%;
+  height: 100%;
+  background: #696969;
+  opacity: 0.4;
+}
+
+.item .item_inner_wrap {
+  padding: 15px;
+  position: absolute;
+  bottom: 0;
+}
+
+#item_detail {
+  display: none;
+  width: 50%;
+  margin: 0 auto;
+  position: fixed;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  color: #000000;
+  z-index: 2;
+  background-color: #f2f2f2;
+}
+
+#item_detail h1 {
+  font-size: 2em;
+  font-family: "Segoe UI", "Segoe WP", "Open Sans", sans-serif;
+  margin-bottom: 15px;
+  border-bottom-style: solid;
+  border-width: 2px;
+  padding-bottom: 8px;
+  font-weight: lighter;
+}
+
+#item_detail #item_detail_left_column {
+  float: left;
+  width: 40%;
+  color: #ffffff;
+  font-size: 0.8em;
+}
+
+#item_detail #item_detail_left_column #item_detail_info {
+  padding: 15px;
+  height: 100%;
+}
+
+#item_detail #item_detail_left_column #item_detail_info #item_detail_info_subscription {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+#item_detail #item_detail_left_column #item_detail_info #item_detail_info_author {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+#item_detail #item_detail_left_column #item_detail_info #item_detail_info_source_link,
+#item_detail #item_detail_left_column #item_detail_info #item_detail_info_mark_as_read {
+  display: block;
+  margin-bottom: 20px;
+  color: #ffffff;
+  font-size: 1.5em;
+}
+
+#item_detail #item_detail_right_column {
+  float: right;
+  width: 60%;
+}
+
+#item_detail #item_detail_right_column #item_detail_content {
+  padding: 0 0 0 15px;
+  line-height: 1.2em;
+}
+
+#item_detail #item_detail_right_column #item_detail_content a {
+  color: #000000;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#item_detail img {
+  float: right;
+  width: 40%;
+  height: auto;
+  margin-left: 10px;
+  border: 2px solid #D4D4D4;
+  padding: 6px;
+}
+
+#overlay {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
