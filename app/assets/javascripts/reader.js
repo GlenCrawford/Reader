@@ -15,15 +15,17 @@ var Reader = {
         xhr.setRequestHeader("X-CSRF-Token", csrf_token);
       }
     });
-    Reader.authenticate(function() {
-      Subscription.get_subscriptions(true);
+    View.login_form(function(email, password) {
+      Reader.authenticate(email, password, function() {
+        Subscription.get_subscriptions(true);
+      });
     });
   },
-  authenticate: function(callback) {
+  authenticate: function(email, password, callback) {
     $.post(Url("authenticate"), {
       service: "reader",
-      Email: "",
-      Passwd: "",
+      Email: email,
+      Passwd: password,
       source: Reader.client,
       continue: "http://www.google.com/"
     }, callback, "text");
@@ -518,6 +520,30 @@ var View = {
     var month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()];
 
     return hour + ":" + minutes + meridian_indicator + ", " + month + " " + day + ordinal_indicator;
+  },
+  login_form: function(callback) {
+    var $login_box = $("#login");
+    var $login_form = $login_box.find("form");
+    var $login_email = $login_form.find("#login_email");
+    var $login_password = $login_form.find("#login_password");
+
+    $login_form.find(".form_line input")
+      .focus(function() {
+        $(this).parent(".form_line").addClass("active_form_line");
+      })
+      .blur(function() {
+        $(this).parent(".form_line").removeClass("active_form_line");
+      });
+    $login_email.focus();
+    $login_form.submit(function() {
+      var email = $.trim($login_email.val());
+      var password = $.trim($login_password.val());
+      if ((email.length > 0) && (password.length > 0)) {
+        callback(email, password);
+        $("#login").remove();
+      }
+      return false;
+    });
   }
 };
 // End View class.
