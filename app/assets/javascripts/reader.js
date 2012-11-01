@@ -6,6 +6,7 @@ $(function() {
 var Reader = {
   client: "Reader/0.1.0",
   update_interval: 180, // In seconds.
+  animate_item_interval: 15, // In seconds.
   title_text: document.title,
   subscriptions: [],
   init: function() {
@@ -221,7 +222,7 @@ Subscription.get_unread_items = function(is_init) {
     });
 
     Reader.update_title();
-    View.update_items();
+    View.update_items(!!is_init);
 
     setTimeout(Subscription.get_unread_items, (Reader.update_interval * 1000));
   }, "xml");
@@ -280,8 +281,8 @@ function Item(id, title, published_at, updated_at, links, summary, content, auth
 
   this.mark_as_read = function() {
     this.subscription.remove_item(this);
-    this.mark_as_read_in_google_reader();
-    View.update_items();
+    //this.mark_as_read_in_google_reader();
+    View.update_items(false);
     Reader.update_title();
   };
 
@@ -364,7 +365,7 @@ var View = {
     var color_index = Math.floor(Math.random() * View.colors.length);
     return View.colors[color_index];
   },
-  update_items: function() {
+  update_items: function(is_init) {
     View.$item_container().empty();
     $.each(Reader.subscriptions, function(index, subscription) {
       if (subscription.unread_count() == 0) {
@@ -400,20 +401,23 @@ var View = {
             item.mark_as_read();
           });
         if (item.has_image()) {
-          item.$element.css("background-image", ("url('" + item.image() + "')"));
           item.$element.prepend(
-            $("<div />").addClass("item-background-overlay")
+            $("<div />").addClass("item-background-overlay"),
+            $("<div />")
+              .addClass("item-background")
+              .css("background-image", ("url('" + item.image() + "')"))
           );
         }
-        else {
-          item.$element.css("background-color", ("#" + item.color));
-        }
+        item.$element.css("background-color", ("#" + item.color));
         if (item.is_wide()) {
           item.$element.addClass("item-wide");
         }
         View.$item_container().append(item.$element);
       });
     });
+    if (is_init) {
+      View.set_animate_item_interval();
+    }
   },
   show_item: function(item) {
     var $item_detail = $("#item_detail");
@@ -544,6 +548,62 @@ var View = {
       }
       return false;
     });
+  },
+  set_animate_item_interval: function() {
+    View.animate_item();
+    setInterval(View.animate_item, (Reader.animate_item_interval * 1000));
+  },
+  animate_item: function() {
+    // Get all items that have images.
+    var items_with_images = $.map(Reader.subscriptions, function(subscription, index) {
+      var subscription_items_with_images = [];
+      $.each(subscription.items, function(index, item) {
+        if (item.has_image()) {
+          subscription_items_with_images.push(item);
+        }
+      });
+      return subscription_items_with_images;
+    });
+
+    // There are no items with images, so just stop here.
+    if (items_with_images.length == 0) {
+      return;
+    }
+
+    // Randomly pick one of those items.
+    var item = items_with_images[Math.floor(Math.random() * items_with_images.length)];
+
+    // Now we have a random item with an image, let's animate it.
+    var $image = item.$element.find(".item-background");
+
+    // First, get the heights of the item and the item text.
+    var item_height = item.$element.height();
+    var $item_text = item.$element.find(".item_inner_wrap");
+    var item_text_height = ($item_text.height() + (parseInt($item_text.css("padding").replace("px", "")) * 2));
+
+    // Calculate the direction and distance of the animation.
+    var direction = ["up", "down"][Math.floor(Math.random() * 2)];
+    var distance;
+
+    if (direction == "up") {
+      distance = (item_text_height * -1);
+    }
+    else if (direction == "down") {
+      distance = (item_height - item_text_height);
+    }
+
+    // Set the animation options.
+    var animation_options = {
+      duration: 1500,
+      easing: "swing"
+    };
+
+    // And finally, do the animations.
+    $image.animate({"margin-top": distance}, $.extend({
+      complete: function() {
+        $image.delay(4000).animate({"margin-top": 0}, animation_options);
+      }
+    }, animation_options));
   }
 };
 // End View class.

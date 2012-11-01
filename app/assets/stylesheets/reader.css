@@ -26,9 +26,6 @@ h1 {
   margin: 8px 0 0 8px;
   font-size: 1em;
   line-height: 1.2em;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
   position: relative;
   overflow: hidden;
   float: left;
@@ -43,11 +40,20 @@ h1 {
   width: 328px; /* Double the normal .item width plus the left/right margin. */
 }
 
+.item .item-background {
+  width: 100%;
+  height: 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .item .item-background-overlay {
   width: 100%;
   height: 100%;
   background: #696969;
   opacity: 0.4;
+  float: left;
 }
 
 .item .item_inner_wrap {
