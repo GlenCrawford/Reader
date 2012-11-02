@@ -433,7 +433,7 @@ var View = {
     $item_content.html(item.content || item.summary);
 
     $item_info.find("#item_detail_info_subscription").html(item.subscription.title);
-    $item_info.find("#item_detail_info_author").html(item.author);
+    $item_info.find("#item_detail_info_author").html(item.author.toLowerCase());
     $item_info.find("#item_detail_info_source_link").attr("href", item.source_url());
     $item_info.find("#item_detail_info_published_at").text("Published at " + View.format_date(item.published_at));
     $item_info.find("#item_detail_info_updated_at").text("Updated at " + View.format_date(item.updated_at));

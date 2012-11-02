@@ -20,10 +20,14 @@ h1 {
   font-weight: lighter;
 }
 
+#item_container {
+  padding: 8px 4px 4px 4px;
+}
+
 .item {
   width: 160px;
   height: 160px;
-  margin: 8px 0 0 8px;
+  margin: 0 4px 8px 4px;
   font-size: 1em;
   line-height: 1.2em;
   position: relative;
@@ -96,6 +100,7 @@ h1 {
 #item_detail #item_detail_left_column #item_detail_info #item_detail_info_author {
   font-size: 1.5em;
   margin-bottom: 20px;
+  text-transform: capitalize;
 }
 
 #item_detail #item_detail_left_column #item_detail_info #item_detail_info_source_link,
@@ -104,6 +109,11 @@ h1 {
   margin-bottom: 20px;
   color: #ffffff;
   font-size: 1.5em;
+}
+
+#item_detail #item_detail_left_column #item_detail_info #item_detail_info_published_at,
+#item_detail #item_detail_left_column #item_detail_info #item_detail_info_updated_at {
+  line-height: 1.3em;
 }
 
 #item_detail #item_detail_right_column {
@@ -144,7 +154,8 @@ h1 {
 #login {
   display: block;
   background-color: #ffffff;
-  width: 550px;
+  width: 536px;
+  padding: 40px 40px 40px 0;
 }
 
 #login h1 {
@@ -154,7 +165,7 @@ h1 {
 
 #login .form_line {
   font-size: 1.1em;
-  padding: 20px 0 20px 40px;
+  padding: 20px 0 20px 35px;
   border-left: 5px solid #ffffff;
 }
 
@@ -169,7 +180,7 @@ h1 {
   padding: 10px 12px;
   font-size: 1.1em;
   color: #7C7C7C;
-  width: 470px;
+  width: 469px;
   outline: none;
 }
 
