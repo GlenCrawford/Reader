@@ -224,7 +224,9 @@ Subscription.get_unread_items = function(is_init) {
     Reader.update_title();
     View.update_items(!!is_init);
 
-    setTimeout(Subscription.get_unread_items, (Reader.update_interval * 1000));
+    if (!!is_init) {
+      setInterval(Subscription.get_unread_items, (Reader.update_interval * 1000));
+    }
   }, "xml");
 };
 // End Subscription class.
@@ -281,7 +283,7 @@ function Item(id, title, published_at, updated_at, links, summary, content, auth
 
   this.mark_as_read = function() {
     this.subscription.remove_item(this);
-    //this.mark_as_read_in_google_reader();
+    this.mark_as_read_in_google_reader();
     View.update_items(false);
     Reader.update_title();
   };
@@ -415,6 +417,7 @@ var View = {
         View.$item_container().append(item.$element);
       });
     });
+    View.normalize_item_element_widths();
     if (is_init) {
       View.set_animate_item_interval();
     }
@@ -604,6 +607,96 @@ var View = {
         $image.delay(4000).animate({"margin-top": 0}, animation_options);
       }
     }, animation_options));
+  },
+  normalize_item_element_widths: function() {
+    var element_rows = {};
+    var all_elements = [];
+
+    // Build up an array of all the elements on the screen.
+    $.each(Reader.subscriptions, function(index, subscription) {
+      if (subscription.$element) {
+        all_elements.push(subscription);
+      }
+      $.each(subscription.items, function(index, item) {
+        all_elements.push(item);
+      });
+    });
+
+    // If there are no elements on the screen, stop here.
+    if (all_elements.length == 0) {
+      return;
+    }
+
+    // Sort each element into each row that they exist in on the screen.
+    $.each(all_elements, function(index, element) {
+      var row = element.$element.offset().top;
+      if (!element_rows[row]) {
+        element_rows[row] = [];
+      }
+      element_rows[row].push(element);
+    });
+
+    // Determine how many item elements there should be on a row, by counting how
+    // many elements there are in each row on the screen (wide ones count as two),
+    // and getting the highest even number.
+    var num_elements_in_all_rows = [];
+    $.each(element_rows, function(row, elements) {
+      var num_elements_in_this_row = 0;
+      $.each(elements, function(index, element) {
+        if (element.$element.hasClass("item-wide")) {
+          num_elements_in_this_row += 2;
+        }
+        else {
+          num_elements_in_this_row += 1;
+        }
+      });
+      num_elements_in_all_rows.push(num_elements_in_this_row);
+    });
+
+    var optimal_elements_per_row;
+    $.each(num_elements_in_all_rows.sort().reverse(), function(index, num_elements) {
+      if (num_elements % 2 == 0) {
+        optimal_elements_per_row = num_elements;
+        return false;
+      }
+    });
+
+    // Finally, for those rows that have less than the optimal number of elements
+    // per row (except the last one), make the single-width item element with the
+    // longest title a wide one to fill in the rest of the row.
+    $.each(element_rows, function(row, elements) {
+      // Skip the last row.
+      if (row == Object.keys(element_rows).slice(-1)[0]) {
+        return false;
+      }
+      // Count how many elements there are in the row.
+      var num_elements = elements.length;
+      $.each(elements, function(index, element) {
+        if (element.$element.hasClass("item-wide")) {
+          num_elements += 1;
+        }
+      });
+      // If this row has less than the optimal number of elements per row.
+      if (num_elements < optimal_elements_per_row) {
+        var element_to_widen = null;
+        $.each(elements, function(index, element) {
+          // Skip this element if it is a subscription.
+          if (element.$element.hasClass("subscription")) {
+            return true;
+          }
+          // Also skip if it is already a wide item.
+          if (element.$element.hasClass("item-wide")) {
+            return true;
+          }
+          // Find the single-width item element with the longest title.
+          if ((element_to_widen == null) || (element.title.length >= element_to_widen.title.length)) {
+            element_to_widen = element;
+          }
+        });
+        // And finally, make that element a wide one to fill in the rest of the row.
+        element_to_widen.$element.addClass("item-wide");
+      }
+    });
   }
 };
 // End View class.
