@@ -641,24 +641,22 @@ var View = {
     // and getting the highest even number.
     var num_elements_in_all_rows = [];
     $.each(element_rows, function(row, elements) {
-      var num_elements_in_this_row = 0;
+      var num_elements_in_this_row = elements.length;
       $.each(elements, function(index, element) {
         if (element.$element.hasClass("item-wide")) {
-          num_elements_in_this_row += 2;
-        }
-        else {
           num_elements_in_this_row += 1;
         }
       });
       num_elements_in_all_rows.push(num_elements_in_this_row);
     });
+    var optimal_elements_per_row = num_elements_in_all_rows.sort().reverse()[0];
 
-    var optimal_elements_per_row;
-    $.each(num_elements_in_all_rows.sort().reverse(), function(index, num_elements) {
-      if (num_elements % 2 == 0) {
-        optimal_elements_per_row = num_elements;
-        return false;
-      }
+    // Convert the row numbers to actual numbers (Object.keys returns strings),
+    // and sort them numerically.
+    var row_numbers = $.map(Object.keys(element_rows), function(row_number) {
+      return parseInt(row_number);
+    }).sort(function(a, b) {
+      return a - b;
     });
 
     // Finally, for those rows that have less than the optimal number of elements
@@ -666,7 +664,7 @@ var View = {
     // longest title a wide one to fill in the rest of the row.
     $.each(element_rows, function(row, elements) {
       // Skip the last row.
-      if (row == Object.keys(element_rows).slice(-1)[0]) {
+      if (row == row_numbers.slice(-1)[0]) {
         return false;
       }
       // Count how many elements there are in the row.
@@ -693,8 +691,10 @@ var View = {
             element_to_widen = element;
           }
         });
-        // And finally, make that element a wide one to fill in the rest of the row.
-        element_to_widen.$element.addClass("item-wide");
+        // And finally, make that element a wide one to fill in the rest of the row, if we found one to widen.
+        if (element_to_widen) {
+          element_to_widen.$element.addClass("item-wide");
+        }
       }
     });
   }
