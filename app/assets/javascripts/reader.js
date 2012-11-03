@@ -181,6 +181,10 @@ Subscription.get_subscriptions = function(is_init) {
 
 Subscription.get_unread_items = function(is_init) {
   $.get(Url("unread_items"), function(data) {
+    // Get all the items that we currently have.
+    var existing_items = Item.all();
+    var new_items = [];
+
     $.each(data.documentElement.getElementsByTagName("entry"), function(index, entry) {
       var id = entry.getElementsByTagName("id")[0].firstChild.nodeValue;
 
@@ -214,7 +218,25 @@ Subscription.get_unread_items = function(is_init) {
       var subscription_id = entry.getElementsByTagName("source")[0].attributes.getNamedItem("gr:stream-id").nodeValue;
       var subscription = Subscription.find_subscription(subscription_id);
 
-      subscription.add_item(new Item(id, title, published, updated, links, summary, content, author, subscription), (!is_init));
+      var item = new Item(id, title, published, updated, links, summary, content, author, subscription);
+
+      new_items.push(item);
+      subscription.add_item(item, (!is_init));
+    });
+
+    // Find any items that we had before we polled for items, that weren't in the
+    // returned items, so that we remove them.
+    // First, gather the IDs of the items that we received.
+    var new_item_ids = $.map(new_items, function(item) {
+      return item.id;
+    });
+    // Then loop over the items that we already had.
+    $.each(existing_items, function(index, existing_item) {
+      // If the ID of this existing item is not in the array of new item IDs.
+      if ($.inArray(existing_item.id, new_item_ids) == -1) {
+        // Mark the item as read.
+        existing_item.mark_as_read();
+      }
     });
 
     $.each(Reader.subscriptions, function(index, subscription) {
@@ -345,6 +367,12 @@ Item.sort = function(item1, item2) {
     return 1;
   }
   return 0;
+};
+
+Item.all = function() {
+  return $.map(Reader.subscriptions, function(subscription) {
+    return subscription.items;
+  });
 };
 // End Item class.
 
