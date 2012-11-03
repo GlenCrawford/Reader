@@ -113,7 +113,7 @@ function Subscription(id, title, url) {
       // If true (probably on the first batch of items), show
       // a desktop notification to alert the user.
       if (notify) {
-        Notifier.notify(item.image(), item.subscription.title, item.title);
+        Notifier.notify((item.image() || ""), item.subscription.title, item.title);
       }
     }
   };
