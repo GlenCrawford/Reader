@@ -1,3 +1,7 @@
+* {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
 body {
   font-size: 1em;
   font-family: Verdana, "Segoe UI", "Segoe WP", sans-serif;
@@ -69,7 +73,7 @@ h1 {
 #item_detail,
 #login {
   display: none;
-  width: 50%;
+  width: 70%;
   margin: 0 auto;
   position: fixed;
   left: 0;
@@ -82,7 +86,7 @@ h1 {
 
 #item_detail #item_detail_left_column {
   float: left;
-  width: 40%;
+  width: 29%;
   color: #ffffff;
   font-size: 0.8em;
 }
@@ -118,7 +122,7 @@ h1 {
 
 #item_detail #item_detail_right_column {
   float: right;
-  width: 60%;
+  width: 71%;
 }
 
 #item_detail #item_detail_right_column #item_detail_content {
@@ -182,6 +186,7 @@ h1 {
   color: #7C7C7C;
   width: 468px;
   outline: none;
+  -webkit-appearance: none;
 }
 
 #login input[type="submit"] {
