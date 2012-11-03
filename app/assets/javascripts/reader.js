@@ -225,7 +225,7 @@ Subscription.get_unread_items = function(is_init) {
     });
 
     // Find any items that we had before we polled for items, that weren't in the
-    // returned items, so that we remove them.
+    // returned items, so that we can remove them.
     // First, gather the IDs of the items that we received.
     var new_item_ids = $.map(new_items, function(item) {
       return item.id;
