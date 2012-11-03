@@ -418,6 +418,7 @@ var View = {
       });
     });
     View.normalize_item_element_widths();
+    View.resize_items_to_fill_window();
     if (is_init) {
       View.set_animate_item_interval();
     }
@@ -433,7 +434,7 @@ var View = {
     $item_content.html(item.content || item.summary);
 
     $item_info.find("#item_detail_info_subscription").html(item.subscription.title);
-    $item_info.find("#item_detail_info_author").html(item.author.toLowerCase());
+    $item_info.find("#item_detail_info_author").html(item.author ? item.author.toLowerCase() : "");
     $item_info.find("#item_detail_info_source_link").attr("href", item.source_url());
     $item_info.find("#item_detail_info_published_at").text("Published at " + View.format_date(item.published_at));
     $item_info.find("#item_detail_info_updated_at").text("Updated at " + View.format_date(item.updated_at));
@@ -697,6 +698,38 @@ var View = {
         }
       }
     });
+  },
+  resize_items_to_fill_window: function() {
+    var $item_container = $("#item_container");
+    var $items = $item_container.find(".item");
+
+    // Stop here if there aren't any items on the screen.
+    if ($items.length == 0) {
+      return;
+    }
+
+    // Calculate the width of the item container, not including border, margin or padding.
+    var item_container_left_padding = parseInt($item_container.css("padding-left").replace("px", ""));
+    var item_container_right_padding = parseInt($item_container.css("padding-right").replace("px", ""));
+    var item_container_width = $item_container.innerWidth() - item_container_left_padding - item_container_right_padding;
+
+    // Calculate the total width needed per item.
+    var item_left_margin = parseInt($items.css("margin-left").replace("px", ""));
+    var item_right_margin = parseInt($items.css("margin-right").replace("px", ""));
+    var item_width = $items.width() + item_left_margin + item_right_margin;
+
+    // Find out how many items there already are per row.
+    var num_items_on_a_row = Math.floor(item_container_width / item_width);
+
+    // Now calculate how wide each item should be to fill up the width of the entire container.
+    var optimal_item_width = Math.floor(item_container_width / num_items_on_a_row) - item_left_margin - item_right_margin;
+
+    // And finally, set the new width (which is also the height) of the items.
+    $items.width(optimal_item_width);
+    $items.height(optimal_item_width);
+
+    // And also the width of the wide items.
+    $items.filter(".item-wide").width((optimal_item_width * 2) + item_left_margin + item_right_margin);
   }
 };
 // End View class.
